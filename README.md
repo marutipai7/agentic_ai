@@ -1,1 +1,1 @@
-## Startng This project for Agentic AI using Langchain for backend and Flask as Webframework
+## Starting This project for Agentic AI using Langchain for backend and Flask as Webframework
