@@ -34,7 +34,7 @@ def register():
         pincode = request.form['pincode']
         password = request.form['password']
 
-        hashed_password = generate_password_hash(password, method='sha256')
+        hashed_password = generate_password_hash(password, method='pbkdf2:sha256')
 
         profile_pic_path = None
         if profile_pic:
@@ -70,19 +70,24 @@ def login():
         user = User.query.filter_by(email=email).first()
         if user and check_password_hash(user.password_hash, password):
             session['user_id'] = user.id
-            return redirect(url_for('dashboard'))
+            return redirect(url_for('dashboard'))  # redirect to dashboard
         else:
             flash("Invalid credentials", "danger")
             return redirect(url_for('login'))
 
-    return render_template('login.html')
+    # GET request → render login page
+    return render_template('login.html')  # login.html does NOT expect 'user'
+
 
 @app.route('/dashboard')
 def dashboard():
     if 'user_id' not in session:
         return redirect(url_for('login'))
+
+    # Fetch user from session
     user = User.query.get(session['user_id'])
-    return render_template('dashboard.html', user=user)
+    return render_template('dashboard.html', user=user)  # dashboard.html expects 'user'
+
 
 @app.route('/logout')
 def logout():
