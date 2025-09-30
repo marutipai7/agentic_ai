@@ -1,1 +1,8 @@
 /venv/
+.env
+migrations/
+__pycache__/
+instance/
+uploads/
+static/
+*.pyc
