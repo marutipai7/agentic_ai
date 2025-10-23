@@ -7,7 +7,6 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 import matplotlib
-matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import StandardScaler, MinMaxScaler, RobustScaler, Normalizer
 
@@ -22,6 +21,7 @@ app = Flask(__name__)
 CORS(app)
 app.config.from_object(Config)
 
+matplotlib.use('Agg')
 # Initialize DB and Migrate
 db.init_app(app)
 migrate = Migrate(app, db)
@@ -203,9 +203,12 @@ def register():
 
         profile_pic_path = None
         if profile_pic:
-            os.makedirs('static/profile_pics', exist_ok=True)
-            profile_pic_path = os.path.join('static/profile_pics', profile_pic.filename)
-            profile_pic.save(profile_pic_path)
+            save_dir = os.path.join('static', 'profile_pics')
+            os.makedirs(save_dir, exist_ok=True)
+
+            filename = profile_pic.filename
+            profile_pic_path = filename  # <-- store only the filename
+            profile_pic.save(os.path.join(save_dir, filename))
 
         new_user = User(
             email=email,

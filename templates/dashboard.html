@@ -20,6 +20,18 @@
         transform: translateY(-5px);
         box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
     }
+    svg {
+        width: 1.5rem; /* Default size (≈ w-6) */
+        height: 1.5rem;
+    }
+    .icon-lg {
+        width: 2rem;  /* Optional larger icons (≈ w-8) */
+        height: 2rem;
+    }
+    .icon-xl {
+        width: 3rem;  /* Optional for special highlights */
+        height: 3rem;
+    }
 </style>
 </head>
 <body class="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen">
@@ -54,9 +66,7 @@
             <div class="flex flex-col md:flex-row items-center md:items-start space-y-4 md:space-y-0 md:space-x-6">
                 {% if user.profile_pic_path %}
                 <div class="relative">
-                    <img src="{{ url_for('static', filename='profile_pics/' + user.profile_pic_path.split('/')[-1]) }}" 
-                         alt="Profile Picture" 
-                         class="w-32 h-32 rounded-full object-cover border-4 border-purple-500 shadow-lg">
+                    <img src="{{ url_for('static', filename=user.profile_pic_path.lstrip('static/')) }}" alt="Profile Picture" class="w-32 h-32 rounded-full object-cover border-4 border-purple-500 shadow-lg">
                     <div class="absolute bottom-0 right-0 w-8 h-8 bg-green-500 rounded-full border-4 border-white"></div>
                 </div>
                 {% else %}
@@ -286,6 +296,7 @@
             </div>
         </div>
         {% endif %}
+    {% endif %}
 
         <!-- Preprocessing Section -->
         <div class="bg-white rounded-2xl shadow-xl p-8 mb-8 slide-in">
