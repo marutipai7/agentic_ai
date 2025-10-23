@@ -6,3 +6,10 @@ instance/
 uploads/
 static/
 *.pyc
+*.csv
+*.xlsx
+.DS_Store
+.idea/
+.vscode/
+*.log
+data.py
