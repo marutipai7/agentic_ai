@@ -364,6 +364,22 @@
                             </label>
                         </div>
                     </div>
+                    <!-- Outlier Treatment -->
+                    <div class="border-2 border-gray-200 rounded-xl p-6 hover:border-purple-300 transition">
+                        <h4 class="font-semibold text-lg mb-4 text-gray-800 flex items-center">
+                            <svg class="w-5 h-5 text-purple-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                    d="M12 8v4m0 4h.01M21 12c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8 8-8 8 3.582 8 8z"/>
+                            </svg>
+                            Outlier Treatment
+                        </h4>
+                        <div class="space-y-3">
+                            <label class="flex items-center space-x-3 cursor-pointer hover:bg-gray-50 p-2 rounded">
+                                <input type="checkbox" name="preprocessing" value="treat_outliers" class="w-4 h-4 text-purple-600 rounded focus:ring-purple-500">
+                                <span class="text-sm text-gray-700">Cap Outliers (IQR method)</span>
+                            </label>
+                        </div>
+                    </div>
                     <!-- Encoding -->
                     <div class="border-2 border-gray-200 rounded-xl p-6 hover:border-purple-300 transition">
                         <h4 class="font-semibold text-lg mb-4 text-gray-800 flex items-center">
@@ -551,6 +567,7 @@
                 const data = await res.json();
                 if (data.success) {
                     renderOverviewAndColumns(data);
+                    showSuccessMessage('Preprocessing completed successfully');
                     renderStatistics(data.statistics || {});
                     renderPlots(data.plots || {});
                 }
