@@ -1,19 +1,14 @@
 import os
-import io
-import base64
 from typing import Dict, Any
-
-import numpy as np
 import pandas as pd
-import seaborn as sns
 import matplotlib
 import matplotlib.pyplot as plt
-from sklearn.preprocessing import StandardScaler, MinMaxScaler, RobustScaler, Normalizer
-
 from config import Config
 from flask_cors import CORS
 from models import db, User
 from flask_migrate import Migrate
+from preprocess_utils import _compute_overview_and_stats, _apply_preprocessing
+from plot_utils import _generate_plots
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
 
@@ -42,142 +37,6 @@ def _set_user_df(df: pd.DataFrame) -> None:
     if user_id is None:
         return
     USER_DATAFRAMES[user_id] = df
-
-
-def _figure_to_base64() -> str:
-    buf = io.BytesIO()
-    plt.tight_layout()
-    plt.savefig(buf, format='png', bbox_inches='tight')
-    plt.close()
-    buf.seek(0)
-    return base64.b64encode(buf.read()).decode('utf-8')
-
-
-def _compute_overview_and_stats(df: pd.DataFrame) -> Dict[str, Any]:
-    overview = {
-        'total_rows': int(df.shape[0]),
-        'total_columns': int(df.shape[1]),
-        'missing_values': int(df.isna().sum().sum()),
-        'numeric_columns': int(df.select_dtypes(include=[np.number]).shape[1]),
-    }
-
-    column_info = []
-    for col in df.columns:
-        series = df[col]
-        missing_percent = float(series.isna().mean() * 100.0)
-        dtype_str = str(series.dtype)
-        unique_values = int(series.nunique(dropna=True))
-        column_info.append({
-            'name': col,
-            'dtype': dtype_str,
-            'missing_percent': missing_percent,
-            'unique_values': unique_values,
-        })
-
-    numeric_df = df.select_dtypes(include=[np.number])
-    stats: Dict[str, Dict[str, float]] = {}
-    if not numeric_df.empty:
-        desc = numeric_df.describe().to_dict()
-        # transpose to {col: {metric: value}}
-        for col, metrics in desc.items():
-            stats[col] = {}
-            for metric, value in metrics.items():
-                # Cast numpy types to python native for JSON
-                if pd.isna(value):
-                    stats[col][metric] = None
-                else:
-                    stats[col][metric] = float(value)
-
-    return {
-        'data_overview': overview,
-        'column_info': column_info,
-        'statistics': stats,
-    }
-
-
-def _generate_plots(df: pd.DataFrame) -> Dict[str, Any]:
-    plots: Dict[str, Any] = {}
-    numeric_df = df.select_dtypes(include=[np.number])
-
-    # Correlation heatmap
-    if numeric_df.shape[1] >= 2:
-        plt.figure(figsize=(6, 5))
-        corr = numeric_df.corr(numeric_only=True)
-        sns.heatmap(corr, cmap='coolwarm', annot=False)
-        plots['heatmap'] = _figure_to_base64()
-
-    # Histograms and Boxplots for up to 6 numeric columns
-    cols = list(numeric_df.columns)[:6]
-    histograms: Dict[str, str] = {}
-    boxplots: Dict[str, str] = {}
-    for col in cols:
-        series = numeric_df[col].dropna()
-        if series.empty:
-            continue
-        # Distribution plot (hist + kde)
-        plt.figure(figsize=(5, 3))
-        sns.histplot(series, kde=True, bins=30, color='#6366F1')
-        plt.title(f'Distribution - {col}')
-        histograms[col] = _figure_to_base64()
-
-        # Boxplot
-        plt.figure(figsize=(5, 2.5))
-        sns.boxplot(x=series, color='#22C55E')
-        plt.title(f'Boxplot - {col}')
-        boxplots[col] = _figure_to_base64()
-
-    if histograms:
-        plots['histograms'] = histograms
-    if boxplots:
-        plots['boxplots'] = boxplots
-
-    return plots
-
-
-def _apply_preprocessing(df: pd.DataFrame, steps: list[str]) -> pd.DataFrame:
-    result = df.copy()
-    numeric_cols = list(result.select_dtypes(include=[np.number]).columns)
-    cat_cols = list(result.select_dtypes(exclude=[np.number]).columns)
-
-    if 'drop_missing' in steps:
-        result = result.dropna()
-        numeric_cols = list(result.select_dtypes(include=[np.number]).columns)
-        cat_cols = list(result.select_dtypes(exclude=[np.number]).columns)
-
-    if 'fill_mean' in steps and numeric_cols:
-        result[numeric_cols] = result[numeric_cols].fillna(result[numeric_cols].mean())
-
-    if 'fill_median' in steps and numeric_cols:
-        result[numeric_cols] = result[numeric_cols].fillna(result[numeric_cols].median())
-
-    if 'fill_mode' in steps and cat_cols:
-        for c in cat_cols:
-            mode_val = result[c].mode(dropna=True)
-            if not mode_val.empty:
-                result[c] = result[c].fillna(mode_val.iloc[0])
-
-    # One-hot encoding
-    if 'one_hot' in steps and cat_cols:
-        result = pd.get_dummies(result, columns=cat_cols, drop_first=True)
-        numeric_cols = list(result.select_dtypes(include=[np.number]).columns)
-
-    # Scaling / Normalization (apply to numeric columns only)
-    numeric_cols = list(result.select_dtypes(include=[np.number]).columns)
-    if numeric_cols:
-        if 'standardize' in steps:
-            scaler = StandardScaler()
-            result[numeric_cols] = scaler.fit_transform(result[numeric_cols])
-        if 'minmax' in steps:
-            scaler = MinMaxScaler()
-            result[numeric_cols] = scaler.fit_transform(result[numeric_cols])
-        if 'robust' in steps:
-            scaler = RobustScaler()
-            result[numeric_cols] = scaler.fit_transform(result[numeric_cols])
-        if 'normalize_l2' in steps:
-            normalizer = Normalizer(norm='l2')
-            result[numeric_cols] = normalizer.fit_transform(result[numeric_cols])
-
-    return result
 
 # Routes
 @app.route('/')
