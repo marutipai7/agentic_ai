@@ -1,15 +1,15 @@
 import os
-from typing import Dict, Any
-import pandas as pd
 import matplotlib
-import matplotlib.pyplot as plt
+import pandas as pd
 from config import Config
-from flask_cors import CORS
 from models import db, User
+from flask_cors import CORS
+from typing import Dict, Any
+import matplotlib.pyplot as plt
 from flask_migrate import Migrate
-from preprocess_utils import _compute_overview_and_stats, _apply_preprocessing
 from plot_utils import _generate_plots
 from werkzeug.security import generate_password_hash, check_password_hash
+from preprocess_utils import _compute_overview_and_stats, _apply_preprocessing
 from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
 
 app = Flask(__name__)

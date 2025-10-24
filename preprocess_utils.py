@@ -1,6 +1,6 @@
+import numpy as np
 import pandas as pd
 from typing import Dict, Any
-import numpy as np
 from sklearn.preprocessing import StandardScaler, MinMaxScaler, RobustScaler, Normalizer
 
 def _compute_overview_and_stats(df: pd.DataFrame) -> Dict[str, Any]:
