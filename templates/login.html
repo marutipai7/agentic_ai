@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Data Analytics Platform</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@3.3.3/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 
     <style>
         @keyframes gradient-shift {
@@ -44,7 +44,7 @@
         <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-white opacity-5 rounded-full blur-3xl float-animation" style="animation-delay: 1.5s;"></div>
     </div>
 
-    <div class="flex flex-col items-center justify-center w-full max-w-md relative z-10 space-y-8">
+    <div class="flex flex-col items-center justify-center w-full max-w-[700px] relative z-10 space-y-8">
         <!-- Logo / Brand -->
         <div class="text-center mb-8">
             <div class="inline-block bg-white p-4 rounded-2xl shadow-2xl mb-4 transform hover:scale-110 transition duration-300">
@@ -129,22 +129,20 @@
         <!-- Stats Section -->
         <div class="mt-8 grid grid-cols-3 gap-8 text-center justify-items-center w-full max-w-2xl mx-auto">
             <div class="bg-white bg-opacity-20 backdrop-blur-md rounded-xl p-6 w-32">
-                <div class="text-2xl font-bold text-white">500+</div>
-                <div class="text-sm text-white opacity-90">Users</div>
+                <div class="text-2xl font-bold text-black">500+</div>
+                <div class="text-sm text-black opacity-90">Users</div>
             </div>
             <div class="bg-white bg-opacity-20 backdrop-blur-md rounded-xl p-6 w-32">
-                <div class="text-2xl font-bold text-white">10K+</div>
-                <div class="text-sm text-white opacity-90">Datasets</div>
+                <div class="text-2xl font-bold text-black">10K+</div>
+                <div class="text-sm text-black opacity-90">Datasets</div>
             </div>
             <div class="bg-white bg-opacity-20 backdrop-blur-md rounded-xl p-6 w-32">
-                <div class="text-2xl font-bold text-white">99.9%</div>
-                <div class="text-sm text-white opacity-90">Uptime</div>
+                <div class="text-2xl font-bold text-black">99.9%</div>
+                <div class="text-sm text-black opacity-90">Uptime</div>
             </div>
         </div>
-
-
         <!-- Footer -->
-        <p class="text-center text-white text-sm opacity-90">
+        <p class="text-center text-black text-sm opacity-90">
             &copy; 2025 Data Analytics Platform. All rights reserved.
         </p>
     </div>
