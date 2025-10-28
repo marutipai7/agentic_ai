@@ -1,16 +1,19 @@
 import os
+import psycopg2
 import matplotlib
 import pandas as pd
 from config import Config
 from models import db, User
 from flask_cors import CORS
 from typing import Dict, Any
+from pymongo import MongoClient
 import matplotlib.pyplot as plt
 from flask_migrate import Migrate
 from plot_utils import _generate_plots
+from sqlalchemy import create_engine, inspect
 from werkzeug.security import generate_password_hash, check_password_hash
 from preprocess_utils import _compute_overview_and_stats, _apply_preprocessing
-from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
+from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify, send_file
 
 app = Flask(__name__)
 CORS(app)
@@ -66,8 +69,13 @@ def register():
             os.makedirs(save_dir, exist_ok=True)
 
             filename = profile_pic.filename
-            profile_pic_path = filename  # <-- store only the filename
-            profile_pic.save(os.path.join(save_dir, filename))
+
+            # ✅ Save the actual file to the filesystem
+            full_path = os.path.join(save_dir, filename)
+            profile_pic.save(full_path)
+
+            # ✅ Store only the filename (web-safe)
+            profile_pic_path = filename
 
         new_user = User(
             email=email,
@@ -123,18 +131,19 @@ def dashboard():
 
 @app.route('/logout')
 def logout():
-    session.pop('user_id', None)
+    user_id = session.pop('user_id', None)
+    if user_id in USER_DATAFRAMES:
+        USER_DATAFRAMES.pop(user_id)
     return redirect(url_for('login'))
 
 
 @app.route('/upload', methods=['POST'])
 def upload():
     if 'user_id' not in session:
-        return redirect(url_for('login'))
+        return jsonify({'error': 'Unauthorized'}), 401
     file = request.files.get('file')
     if not file or file.filename == '':
-        flash('No file provided', 'danger')
-        return redirect(url_for('dashboard'))
+        return jsonify({'error': 'No file provided'}), 400
     try:
         filename_lower = file.filename.lower()
         if filename_lower.endswith('.csv'):
@@ -145,10 +154,14 @@ def upload():
             flash('Unsupported file format. Please upload CSV or Excel.', 'danger')
             return redirect(url_for('dashboard'))
         _set_user_df(df)
-        flash('File uploaded successfully.', 'success')
+        computed = _compute_overview_and_stats(df)
+        plots = _generate_plots(df)
+
+        return jsonify({'success': True, 'message': 'Dataset uploaded successfully!',
+                        **computed, 'plots': plots})
     except Exception as e:
-        flash(f'Failed to read file: {e}', 'danger')
-    return redirect(url_for('dashboard'))
+        app.logger.exception("Upload failed")
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 
 @app.route('/api/analytics', methods=['GET'])
@@ -180,9 +193,74 @@ def preprocess():
         _set_user_df(new_df)
         computed = _compute_overview_and_stats(new_df)
         plots = _generate_plots(new_df)
-        return jsonify({'success': True, **computed, 'plots': plots})
+
+        return jsonify({'success': True, 'message': 'Preprocessing successful!',
+                        **computed, 'plots': plots})
     except Exception as e:
+        app.logger.exception("Preprocessing failed")
         return jsonify({'success': False, 'error': str(e)}), 500
 
+@app.route('/download')
+def download():
+    df = _get_user_df()
+    if df is None:
+        return jsonify({'error': 'No dataset available'}), 400
+    csv_path = os.path.join('static', 'exports', f'user_{session["user_id"]}_data.csv')
+    os.makedirs(os.path.dirname(csv_path), exist_ok=True)
+    df.to_csv(csv_path, index=False)
+    return send_file(csv_path, as_attachment=True)
+
+@app.route('/connect_db', methods=['POST'])
+def connect_db():
+    db_type = request.form['db_type']
+    host = request.form['host']
+    port = request.form['port']
+    db_name = request.form['database']
+    username = request.form.get('username')
+    password = request.form.get('password')
+
+    try:
+        if db_type == 'postgresql':
+            conn = psycopg2.connect(
+                host=host, port=port, dbname=db_name,
+                user=username, password=password
+            )
+            cur = conn.cursor()
+            cur.execute("""SELECT table_schema, table_name 
+                           FROM information_schema.tables
+                           WHERE table_schema NOT IN ('information_schema', 'pg_catalog')
+                           ORDER BY table_schema, table_name;""")
+            tables = cur.fetchall()
+            conn.close()
+
+            html = render_template('partials/db_schema.html', tables=tables, db_type='PostgreSQL')
+
+        elif db_type == 'mysql':
+            conn = pymysql.connect(
+                host=host, port=int(port), user=username,
+                password=password, db=db_name
+            )
+            cur = conn.cursor()
+            cur.execute("SHOW TABLES;")
+            tables = [(db_name, t[0]) for t in cur.fetchall()]
+            conn.close()
+
+            html = render_template('partials/db_schema.html', tables=tables, db_type='MySQL')
+
+        elif db_type == 'mongodb':
+            client = MongoClient(f"mongodb://{username}:{password}@{host}:{port}/")
+            db = client[db_name]
+            collections = db.list_collection_names()
+            tables = [(db_name, c) for c in collections]
+            html = render_template('partials/db_schema.html', tables=tables, db_type='MongoDB')
+
+        else:
+            return jsonify(success=False, error="Unsupported database type")
+
+        return jsonify(success=True, html=html)
+
+    except Exception as e:
+        return jsonify(success=False, error=str(e))
+    
 if __name__ == '__main__':
     app.run(debug=True)

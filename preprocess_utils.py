@@ -45,7 +45,7 @@ def _compute_overview_and_stats(df: pd.DataFrame) -> Dict[str, Any]:
     }
 
 def _apply_preprocessing(df: pd.DataFrame, steps: list[str]) -> pd.DataFrame:
-    result = df.copy()
+    result = df.copy(deep=True)
     numeric_cols = list(result.select_dtypes(include=[np.number]).columns)
     cat_cols = list(result.select_dtypes(exclude=[np.number]).columns)
 

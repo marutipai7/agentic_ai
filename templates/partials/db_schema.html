@@ -1,0 +1,12 @@
+<div class="bg-white rounded-xl shadow-md p-6 mt-6">
+    <h3 class="text-xl font-bold text-gray-800 mb-4">
+        {{ db_type }} Schema & Tables
+    </h3>
+    <ul class="space-y-2">
+        {% for schema, table in tables %}
+            <li class="border-b py-2 flex justify-between text-gray-700">
+                <span>{{ schema }} → <b>{{ table }}</b></span>
+            </li>
+        {% endfor %}
+    </ul>
+</div>
