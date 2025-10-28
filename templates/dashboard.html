@@ -39,12 +39,6 @@
                         Data Analytics Dashboard
                     </h1>
                 </div>
-                <a href="/logout" class="bg-gradient-to-r from-red-500 to-red-600 text-white px-6 py-2 rounded-lg hover:from-red-600 hover:to-red-700 transition transform hover:scale-105 shadow-md flex items-center">
-                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
-                    </svg>
-                    Logout
-                </a>
                 <a href="#" 
                 onclick="openDbModal()" 
                 class="bg-gradient-to-r from-green-500 to-green-600 text-white px-6 py-2 rounded-lg hover:from-green-600 hover:to-green-700 transition transform hover:scale-105 shadow-md flex items-center">
@@ -53,6 +47,12 @@
                             d="M4 7v10c0 1.1.9 2 2 2h12a2 2 0 002-2V7m-8 10V5m0 0l-3 3m3-3l3 3"></path>
                     </svg>
                     Connect to Database
+                </a>
+                <a href="/logout" class="bg-gradient-to-r from-red-500 to-red-600 text-white px-6 py-2 rounded-lg hover:from-red-600 hover:to-red-700 transition transform hover:scale-105 shadow-md flex items-center">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                    </svg>
+                    Logout
                 </a>
             </div>
         </div>
@@ -92,214 +92,270 @@
     </div>
     <div id="dbSchemaContainer"></div>
     <!-- Main Content -->
-    <div class="max-w-7xl mx-auto px-4 py-8">
+    <div class="max-w-7xl mx-auto px-4 py-8 flex gap-6">
+        <!-- Left Side: Main Dashboard Content -->
+        <div class="flex-1">
         <!-- User Profile Section -->
-        <div class="bg-white rounded-2xl shadow-xl p-8 mb-8 slide-in">
-            <div class="flex flex-col md:flex-row items-center md:items-start space-y-4 md:space-y-0 md:space-x-6">
-                {% if user.profile_pic_path %}
-                <div class="relative">
-                    <img src="{{ url_for('static', filename=user.profile_pic_path.lstrip('static/')) }}" alt="Profile Picture" class="w-32 h-32 rounded-full object-cover border-4 border-purple-500 shadow-lg">
-                    <div class="absolute bottom-0 right-0 w-8 h-8 bg-green-500 rounded-full border-4 border-white"></div>
-                </div>
-                {% else %}
-                <div class="relative">
-                    <div class="w-32 h-32 rounded-full bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center border-4 border-purple-500 shadow-lg">
-                        <span class="text-4xl text-white font-bold">{{ user.first_name[0] }}{{ user.last_name[0] }}</span>
+            <div class="bg-white rounded-2xl shadow-xl p-8 mb-8 slide-in">
+                <div class="flex flex-col md:flex-row items-center md:items-start space-y-4 md:space-y-0 md:space-x-6">
+                    {% if user.profile_pic_path %}
+                    <div class="relative">
+                        <img src="{{ url_for('static', filename=user.profile_pic_path.lstrip('static/')) }}" alt="Profile Picture" class="w-32 h-32 rounded-full object-cover border-4 border-purple-500 shadow-lg">
+                        <div class="absolute bottom-0 right-0 w-8 h-8 bg-green-500 rounded-full border-4 border-white"></div>
                     </div>
-                    <div class="absolute bottom-0 right-0 w-8 h-8 bg-green-500 rounded-full border-4 border-white"></div>
-                </div>
-                {% endif %}
-                
-                <div class="flex-1 text-center md:text-left">
-                    <h2 class="text-3xl font-bold text-gray-800 mb-2">
-                        Welcome back, {{ user.first_name }} {{ user.last_name }}!
-                    </h2>
-                    <p class="text-gray-600 mb-4">Ready to analyze your data</p>
+                    {% else %}
+                    <div class="relative">
+                        <div class="w-32 h-32 rounded-full bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center border-4 border-purple-500 shadow-lg">
+                            <span class="text-4xl text-white font-bold">{{ user.first_name[0] }}{{ user.last_name[0] }}</span>
+                        </div>
+                        <div class="absolute bottom-0 right-0 w-8 h-8 bg-green-500 rounded-full border-4 border-white"></div>
+                    </div>
+                    {% endif %}
                     
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                        <div class="flex items-center justify-center md:justify-start">
-                            <svg class="w-5 h-5 text-purple-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
-                            </svg>
-                            <span class="text-gray-700">{{ user.email }}</span>
-                        </div>
-                        <div class="flex items-center justify-center md:justify-start">
-                            <svg class="w-5 h-5 text-purple-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
-                            </svg>
-                            <span class="text-gray-700">{{ user.mobile_number }}</span>
-                        </div>
-                        <div class="flex items-center justify-center md:justify-start md:col-span-2">
-                            <svg class="w-5 h-5 text-purple-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                            </svg>
-                            <span class="text-gray-700">{{ user.address }}, {{ user.city }}, {{ user.state }}, {{ user.country }} - {{ user.pincode }}</span>
+                    <div class="flex-1 text-center md:text-left">
+                        <h2 class="text-3xl font-bold text-gray-800 mb-2">
+                            Welcome back, {{ user.first_name }} {{ user.last_name }}!
+                        </h2>
+                        <p class="text-gray-600 mb-4">Ready to analyze your data</p>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                            <div class="flex items-center justify-center md:justify-start">
+                                <svg class="w-5 h-5 text-purple-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                                </svg>
+                                <span class="text-gray-700">{{ user.email }}</span>
+                            </div>
+                            <div class="flex items-center justify-center md:justify-start">
+                                <svg class="w-5 h-5 text-purple-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
+                                </svg>
+                                <span class="text-gray-700">{{ user.mobile_number }}</span>
+                            </div>
+                            <div class="flex items-center justify-center md:justify-start md:col-span-2">
+                                <svg class="w-5 h-5 text-purple-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                </svg>
+                                <span class="text-gray-700">{{ user.address }}, {{ user.city }}, {{ user.state }}, {{ user.country }} - {{ user.pincode }}</span>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- File Upload Section -->
-        <div class="bg-white rounded-2xl shadow-xl p-8 mb-8 slide-in">
-            <div class="flex items-center mb-6">
-                <div class="bg-purple-100 p-3 rounded-lg mr-4">
-                    <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
-                    </svg>
-                </div>
-                <div>
-                    <h3 class="text-2xl font-bold text-gray-800">Upload Dataset</h3>
-                    <p class="text-gray-600">Upload your Excel or CSV file to begin analysis</p>
-                </div>
-            </div>
-
-            <form id="uploadForm" action="/upload" method="POST" enctype="multipart/form-data" class="space-y-4">
-                <div class="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:border-purple-500 transition">
-                    <input type="file" name="file" id="fileInput" accept=".csv,.xlsx,.xls" required
-                           class="block w-full text-sm text-gray-500 file:mr-4 file:py-3 file:px-6 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100 cursor-pointer">
-                    <p class="mt-2 text-sm text-gray-500">Supported formats: CSV, XLSX, XLS</p>
-                </div>
-                <button type="submit" 
-                        class="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white py-4 rounded-xl font-semibold hover:from-purple-700 hover:to-indigo-700 transform hover:scale-105 transition duration-200 shadow-lg flex items-center justify-center">
-                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
-                    </svg>
-                    Upload & Analyze Dataset
-                </button>
-            </form>
-        </div>
-
-        <!-- Preprocessing Section -->
-        <div class="bg-white rounded-2xl shadow-xl p-8 mb-8 slide-in">
-            <h3 class="text-2xl font-bold mb-6 text-gray-800 flex items-center">
-                <svg class="w-7 h-7 text-purple-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path>
-                </svg>
-                Data Preprocessing
-            </h3>
-
-            <form action="/preprocess" method="POST" class="space-y-6">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- Missing Value Handling -->
-                    <div class="border-2 border-gray-200 rounded-xl p-6 hover:border-purple-300 transition">
-                        <h4 class="font-semibold text-lg mb-4 text-gray-800 flex items-center">
-                            <svg class="w-5 h-5 text-purple-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                            </svg>
-                            Missing Value Handling
-                        </h4>
-                        <div class="space-y-3">
-                            <label class="flex items-center space-x-3 cursor-pointer hover:bg-gray-50 p-2 rounded">
-                                <input type="checkbox" name="preprocessing" value="drop_missing" class="w-4 h-4 text-purple-600 rounded focus:ring-purple-500">
-                                <span class="text-sm text-gray-700">Drop rows with missing values</span>
-                            </label>
-                            <label class="flex items-center space-x-3 cursor-pointer hover:bg-gray-50 p-2 rounded">
-                                <input type="checkbox" name="preprocessing" value="fill_mean" class="w-4 h-4 text-purple-600 rounded focus:ring-purple-500">
-                                <span class="text-sm text-gray-700">Fill with mean (numeric)</span>
-                            </label>
-                            <label class="flex items-center space-x-3 cursor-pointer hover:bg-gray-50 p-2 rounded">
-                                <input type="checkbox" name="preprocessing" value="fill_median" class="w-4 h-4 text-purple-600 rounded focus:ring-purple-500">
-                                <span class="text-sm text-gray-700">Fill with median (numeric)</span>
-                            </label>
-                            <label class="flex items-center space-x-3 cursor-pointer hover:bg-gray-50 p-2 rounded">
-                                <input type="checkbox" name="preprocessing" value="fill_mode" class="w-4 h-4 text-purple-600 rounded focus:ring-purple-500">
-                                <span class="text-sm text-gray-700">Fill with mode (categorical)</span>
-                            </label>
-                        </div>
+            <!-- File Upload Section -->
+            <div class="bg-white rounded-2xl shadow-xl p-8 mb-8 slide-in">
+                <div class="flex items-center mb-6">
+                    <div class="bg-purple-100 p-3 rounded-lg mr-4">
+                        <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                        </svg>
                     </div>
-
-                    <!-- Normalization -->
-                    <div class="border-2 border-gray-200 rounded-xl p-6 hover:border-purple-300 transition">
-                        <h4 class="font-semibold text-lg mb-4 text-gray-800 flex items-center">
-                            <svg class="w-5 h-5 text-purple-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-                            </svg>
-                            Normalization
-                        </h4>
-                        <div class="space-y-3">
-                            <label class="flex items-center space-x-3 cursor-pointer hover:bg-gray-50 p-2 rounded">
-                                <input type="checkbox" name="preprocessing" value="standardize" class="w-4 h-4 text-purple-600 rounded focus:ring-purple-500">
-                                <span class="text-sm text-gray-700">Standardization (Z-score)</span>
-                            </label>
-                            <label class="flex items-center space-x-3 cursor-pointer hover:bg-gray-50 p-2 rounded">
-                                <input type="checkbox" name="preprocessing" value="minmax" class="w-4 h-4 text-purple-600 rounded focus:ring-purple-500">
-                                <span class="text-sm text-gray-700">Min-Max Scaling</span>
-                            </label>
-                            <label class="flex items-center space-x-3 cursor-pointer hover:bg-gray-50 p-2 rounded">
-                                <input type="checkbox" name="preprocessing" value="robust" class="w-4 h-4 text-purple-600 rounded focus:ring-purple-500">
-                                <span class="text-sm text-gray-700">Robust Scaling (robust to outliers)</span>
-                            </label>
-                            <label class="flex items-center space-x-3 cursor-pointer hover:bg-gray-50 p-2 rounded">
-                                <input type="checkbox" name="preprocessing" value="normalize_l2" class="w-4 h-4 text-purple-600 rounded focus:ring-purple-500">
-                                <span class="text-sm text-gray-700">Vector Normalization (L2)</span>
-                            </label>
-                        </div>
-                    </div>
-
-                    <!-- Outlier Treatment -->
-                    <div class="border-2 border-gray-200 rounded-xl p-6 hover:border-purple-300 transition">
-                        <h4 class="font-semibold text-lg mb-4 text-gray-800 flex items-center">
-                            <svg class="w-5 h-5 text-purple-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                                    d="M12 8v4m0 4h.01M21 12c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8 8-8 8 3.582 8 8z"/>
-                            </svg>
-                            Outlier Treatment
-                        </h4>
-                        <div class="space-y-3">
-                            <label class="flex items-center space-x-3 cursor-pointer hover:bg-gray-50 p-2 rounded">
-                                <input type="checkbox" name="preprocessing" value="treat_outliers" class="w-4 h-4 text-purple-600 rounded focus:ring-purple-500">
-                                <span class="text-sm text-gray-700">Cap Outliers (IQR method)</span>
-                            </label>
-                        </div>
-                    </div>
-
-                    <!-- Encoding -->
-                    <div class="border-2 border-gray-200 rounded-xl p-6 hover:border-purple-300 transition">
-                        <h4 class="font-semibold text-lg mb-4 text-gray-800 flex items-center">
-                            <svg class="w-5 h-5 text-purple-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h2a1 1 0 011 1v2H4a1 1 0 01-1-1V4zm0 7a1 1 0 011-1h2a1 1 0 011 1v2H4a1 1 0 01-1-1v-1zm0 7a1 1 0 011-1h2a1 1 0 011 1v2H4a1 1 0 01-1-1v-1M10 4h10M10 11h10M10 18h10"/>
-                            </svg>
-                            Encoding
-                        </h4>
-                        <div class="space-y-3">
-                            <label class="flex items-center space-x-3 cursor-pointer hover:bg-gray-50 p-2 rounded">
-                                <input type="checkbox" name="preprocessing" value="one_hot" class="w-4 h-4 text-purple-600 rounded focus:ring-purple-500">
-                                <span class="text-sm text-gray-700">One-Hot Encoding (categorical)</span>
-                            </label>
-                        </div>
+                    <div>
+                        <h3 class="text-2xl font-bold text-gray-800">Upload Dataset</h3>
+                        <p class="text-gray-600">Upload your Excel or CSV file to begin analysis</p>
                     </div>
                 </div>
 
-                <div class="flex items-center justify-end gap-3 mt-4">
-                    <button type="submit" class="bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-6 py-3 rounded-lg font-semibold hover:from-purple-700 hover:to-indigo-700 transition">
-                        Apply Preprocessing
+                <form id="uploadForm" action="/upload" method="POST" enctype="multipart/form-data" class="space-y-4">
+                    <div class="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:border-purple-500 transition">
+                        <input type="file" name="file" id="fileInput" accept=".csv,.xlsx,.xls" required
+                            class="block w-full text-sm text-gray-500 file:mr-4 file:py-3 file:px-6 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100 cursor-pointer">
+                        <p class="mt-2 text-sm text-gray-500">Supported formats: CSV, XLSX, XLS</p>
+                    </div>
+                    <button type="submit" 
+                            class="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white py-4 rounded-xl font-semibold hover:from-purple-700 hover:to-indigo-700 transform hover:scale-105 transition duration-200 shadow-lg flex items-center justify-center">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                        </svg>
+                        Upload & Analyze Dataset
                     </button>
-                    <button id="refreshAnalyticsBtn" type="button" class="px-5 py-3 rounded-lg border border-gray-300 hover:bg-gray-50 transition">
-                        Refresh Analytics
-                    </button>
-                </div>
-            </form>
-        </div>
+                </form>
+            </div>
 
-        <!-- Download Section (only show if data exists) -->
-        {% if data_overview %}
-        <div class="bg-white rounded-2xl shadow-xl p-8 mb-8 slide-in">
-            <div class="flex items-center justify-between">
-                <div>
-                    <h3 class="text-2xl font-bold text-gray-800 mb-2">Download Processed Data</h3>
-                    <p class="text-gray-600">Export your preprocessed dataset as CSV</p>
-                </div>
-                <a href="/download" class="bg-gradient-to-r from-green-500 to-green-600 text-white px-6 py-3 rounded-lg hover:from-green-600 hover:to-green-700 transition transform hover:scale-105 shadow-md flex items-center">
-                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+            <!-- Preprocessing Section -->
+            <div class="bg-white rounded-2xl shadow-xl p-8 mb-8 slide-in">
+                <h3 class="text-2xl font-bold mb-6 text-gray-800 flex items-center">
+                    <svg class="w-7 h-7 text-purple-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path>
                     </svg>
-                    Download CSV
-                </a>
+                    Data Preprocessing
+                </h3>
+
+                <form action="/preprocess" method="POST" class="space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Missing Value Handling -->
+                        <div class="border-2 border-gray-200 rounded-xl p-6 hover:border-purple-300 transition">
+                            <h4 class="font-semibold text-lg mb-4 text-gray-800 flex items-center">
+                                <svg class="w-5 h-5 text-purple-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                </svg>
+                                Missing Value Handling
+                            </h4>
+                            <div class="space-y-3">
+                                <label class="flex items-center space-x-3 cursor-pointer hover:bg-gray-50 p-2 rounded">
+                                    <input type="checkbox" name="preprocessing" value="drop_missing" class="w-4 h-4 text-purple-600 rounded focus:ring-purple-500">
+                                    <span class="text-sm text-gray-700">Drop rows with missing values</span>
+                                </label>
+                                <label class="flex items-center space-x-3 cursor-pointer hover:bg-gray-50 p-2 rounded">
+                                    <input type="checkbox" name="preprocessing" value="fill_mean" class="w-4 h-4 text-purple-600 rounded focus:ring-purple-500">
+                                    <span class="text-sm text-gray-700">Fill with mean (numeric)</span>
+                                </label>
+                                <label class="flex items-center space-x-3 cursor-pointer hover:bg-gray-50 p-2 rounded">
+                                    <input type="checkbox" name="preprocessing" value="fill_median" class="w-4 h-4 text-purple-600 rounded focus:ring-purple-500">
+                                    <span class="text-sm text-gray-700">Fill with median (numeric)</span>
+                                </label>
+                                <label class="flex items-center space-x-3 cursor-pointer hover:bg-gray-50 p-2 rounded">
+                                    <input type="checkbox" name="preprocessing" value="fill_mode" class="w-4 h-4 text-purple-600 rounded focus:ring-purple-500">
+                                    <span class="text-sm text-gray-700">Fill with mode (categorical)</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Normalization -->
+                        <div class="border-2 border-gray-200 rounded-xl p-6 hover:border-purple-300 transition">
+                            <h4 class="font-semibold text-lg mb-4 text-gray-800 flex items-center">
+                                <svg class="w-5 h-5 text-purple-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                                </svg>
+                                Normalization
+                            </h4>
+                            <div class="space-y-3">
+                                <label class="flex items-center space-x-3 cursor-pointer hover:bg-gray-50 p-2 rounded">
+                                    <input type="checkbox" name="preprocessing" value="standardize" class="w-4 h-4 text-purple-600 rounded focus:ring-purple-500">
+                                    <span class="text-sm text-gray-700">Standardization (Z-score)</span>
+                                </label>
+                                <label class="flex items-center space-x-3 cursor-pointer hover:bg-gray-50 p-2 rounded">
+                                    <input type="checkbox" name="preprocessing" value="minmax" class="w-4 h-4 text-purple-600 rounded focus:ring-purple-500">
+                                    <span class="text-sm text-gray-700">Min-Max Scaling</span>
+                                </label>
+                                <label class="flex items-center space-x-3 cursor-pointer hover:bg-gray-50 p-2 rounded">
+                                    <input type="checkbox" name="preprocessing" value="robust" class="w-4 h-4 text-purple-600 rounded focus:ring-purple-500">
+                                    <span class="text-sm text-gray-700">Robust Scaling (robust to outliers)</span>
+                                </label>
+                                <label class="flex items-center space-x-3 cursor-pointer hover:bg-gray-50 p-2 rounded">
+                                    <input type="checkbox" name="preprocessing" value="normalize_l2" class="w-4 h-4 text-purple-600 rounded focus:ring-purple-500">
+                                    <span class="text-sm text-gray-700">Vector Normalization (L2)</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Outlier Treatment -->
+                        <div class="border-2 border-gray-200 rounded-xl p-6 hover:border-purple-300 transition">
+                            <h4 class="font-semibold text-lg mb-4 text-gray-800 flex items-center">
+                                <svg class="w-5 h-5 text-purple-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                        d="M12 8v4m0 4h.01M21 12c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8 8-8 8 3.582 8 8z"/>
+                                </svg>
+                                Outlier Treatment
+                            </h4>
+                            <div class="space-y-3">
+                                <label class="flex items-center space-x-3 cursor-pointer hover:bg-gray-50 p-2 rounded">
+                                    <input type="checkbox" name="preprocessing" value="treat_outliers" class="w-4 h-4 text-purple-600 rounded focus:ring-purple-500">
+                                    <span class="text-sm text-gray-700">Cap Outliers (IQR method)</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Encoding -->
+                        <div class="border-2 border-gray-200 rounded-xl p-6 hover:border-purple-300 transition">
+                            <h4 class="font-semibold text-lg mb-4 text-gray-800 flex items-center">
+                                <svg class="w-5 h-5 text-purple-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h2a1 1 0 011 1v2H4a1 1 0 01-1-1V4zm0 7a1 1 0 011-1h2a1 1 0 011 1v2H4a1 1 0 01-1-1v-1zm0 7a1 1 0 011-1h2a1 1 0 011 1v2H4a1 1 0 01-1-1v-1M10 4h10M10 11h10M10 18h10"/>
+                                </svg>
+                                Encoding
+                            </h4>
+                            <div class="space-y-3">
+                                <label class="flex items-center space-x-3 cursor-pointer hover:bg-gray-50 p-2 rounded">
+                                    <input type="checkbox" name="preprocessing" value="one_hot" class="w-4 h-4 text-purple-600 rounded focus:ring-purple-500">
+                                    <span class="text-sm text-gray-700">One-Hot Encoding (categorical)</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-end gap-3 mt-4">
+                        <button type="submit" class="bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-6 py-3 rounded-lg font-semibold hover:from-purple-700 hover:to-indigo-700 transition">
+                            Apply Preprocessing
+                        </button>
+                        <button id="refreshAnalyticsBtn" type="button" class="px-5 py-3 rounded-lg border border-gray-300 hover:bg-gray-50 transition">
+                            Refresh Analytics
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Download Section (only show if data exists) -->
+            {% if data_overview %}
+            <div class="bg-white rounded-2xl shadow-xl p-8 mb-8 slide-in">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="text-2xl font-bold text-gray-800 mb-2">Download Processed Data</h3>
+                        <p class="text-gray-600">Export your preprocessed dataset as CSV</p>
+                    </div>
+                    <a href="/download" class="bg-gradient-to-r from-green-500 to-green-600 text-white px-6 py-3 rounded-lg hover:from-green-600 hover:to-green-700 transition transform hover:scale-105 shadow-md flex items-center">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                        </svg>
+                        Download CSV
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Right Side: Chat Window -->
+            <div class="w-96 flex flex-col">
+                <div class="bg-white rounded-2xl shadow-xl flex flex-col sticky top-24" style="height: calc(100vh - 8rem);">
+                    <!-- Chat Header -->
+                    <div class="bg-gradient-to-r from-indigo-600 to-purple-600 p-4 rounded-t-2xl flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <div class="bg-white/20 p-2 rounded-lg">
+                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="text-white font-bold text-lg">Data Agent</h3>
+                                <p class="text-white/80 text-xs">Ask about your dataset</p>
+                            </div>
+                        </div>
+                        <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                    </div>
+
+                    <!-- Chat Messages -->
+                    <div id="chat-box" class="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50">
+                        <div class="text-center text-sm text-gray-500 py-4">
+                            <svg class="w-12 h-12 mx-auto mb-2 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-3.582 8-8 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 3.582-8 8-8s8 3.582 8 8z"></path>
+                            </svg>
+                            Start a conversation about your data
+                        </div>
+                    </div>
+
+                    <!-- Chat Input -->
+                    <div class="border-t border-gray-200 p-4 bg-white rounded-b-2xl">
+                        <div class="flex gap-2">
+                            <input 
+                                id="chat-message" 
+                                type="text" 
+                                placeholder="Ask something about your dataset..." 
+                                class="flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm"
+                                onkeypress="if(event.key === 'Enter') sendChatMessage()"
+                            >
+                            <button 
+                                id="chat-send" 
+                                onclick="sendChatMessage()"
+                                class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-4 py-2 rounded-lg hover:from-indigo-700 hover:to-purple-700 transition transform hover:scale-105 shadow-md flex items-center"
+                            >
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-        {% endif %}
     </div>
 
 <script>
@@ -654,6 +710,74 @@ async function refreshAll() {
 document.addEventListener('DOMContentLoaded', () => {
     refreshAll();
 });
+
+/* ----------------------- 💬 Chat Functions ----------------------- */
+function appendChatMessage(sender, text) {
+    const chatBox = document.getElementById("chat-box");
+    
+    // Remove welcome message if it exists
+    const welcomeMsg = chatBox.querySelector('.text-center');
+    if (welcomeMsg) welcomeMsg.remove();
+    
+    const msgDiv = document.createElement("div");
+    msgDiv.className = `flex ${sender === "user" ? "justify-end" : "justify-start"} mb-3`;
+    
+    const bubble = document.createElement("div");
+    bubble.className = `max-w-xs px-4 py-2 rounded-2xl text-sm ${
+        sender === "user" 
+            ? "bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-tr-none" 
+            : "bg-white text-gray-800 shadow-md rounded-tl-none border border-gray-200"
+    }`;
+    bubble.textContent = text;
+    
+    msgDiv.appendChild(bubble);
+    chatBox.appendChild(msgDiv);
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+async function sendChatMessage() {
+    const input = document.getElementById("chat-message");
+    const text = input.value.trim();
+    if (!text) return;
+    
+    appendChatMessage("user", text);
+    input.value = "";
+    
+    // Show typing indicator
+    const chatBox = document.getElementById("chat-box");
+    const typingDiv = document.createElement("div");
+    typingDiv.className = "flex justify-start mb-3";
+    typingDiv.id = "typing-indicator";
+    typingDiv.innerHTML = `
+        <div class="bg-white text-gray-800 shadow-md rounded-2xl rounded-tl-none border border-gray-200 px-4 py-2">
+            <div class="flex space-x-1">
+                <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
+                <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+            </div>
+        </div>
+    `;
+    chatBox.appendChild(typingDiv);
+    chatBox.scrollTop = chatBox.scrollHeight;
+    
+    try {
+        const res = await fetch("/ai-chat", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ message: text })
+        });
+        const data = await res.json();
+        
+        // Remove typing indicator
+        document.getElementById("typing-indicator")?.remove();
+        
+        appendChatMessage("agent", data.reply);
+    } catch (err) {
+        document.getElementById("typing-indicator")?.remove();
+        appendChatMessage("agent", "Sorry, I encountered an error. Please try again.");
+        console.error("Chat error:", err);
+    }
+}
 </script>
 
 

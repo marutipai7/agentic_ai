@@ -6,6 +6,7 @@ from config import Config
 from models import db, User
 from flask_cors import CORS
 from typing import Dict, Any
+from llm.llm import ask_agent
 from pymongo import MongoClient
 import matplotlib.pyplot as plt
 from flask_migrate import Migrate
@@ -261,6 +262,17 @@ def connect_db():
 
     except Exception as e:
         return jsonify(success=False, error=str(e))
-    
+
+@app.route("/ai-chat", methods=["GET"])
+def chat_page():
+    return render_template("chat.html")
+
+@app.route("/ai-chat", methods=["POST"])
+def chat_api():
+    user_input = request.json.get("message")
+    response = ask_agent(user_input)
+    return jsonify({"reply": response})
+
+
 if __name__ == '__main__':
     app.run(debug=True)

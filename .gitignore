@@ -13,3 +13,5 @@ static/
 .vscode/
 *.log
 data.py
+*.ipynb
+test.ipynb
